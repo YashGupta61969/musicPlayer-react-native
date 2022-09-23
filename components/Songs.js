@@ -1,0 +1,76 @@
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native'
+import React, {useState} from 'react'
+import songs from '../data/data'
+import { Audio } from 'expo-av'
+
+
+export default function Songs() {
+
+  const [playbackObj, setPlaybackObj] = useState()
+  const [soundObj, setSoundObj] = useState()
+  const [currentAudio, setCurrentAudio] = useState({})  
+
+  const handleAudioPress = async (music)=>{
+    // playing audio for the first time
+    if(!soundObj){
+      const playbackObj = new Audio.Sound();
+      const status = await playbackObj.loadAsync({uri:music.url},{shouldPlay:true});
+      setPlaybackObj(playbackObj)
+      setSoundObj(status);
+      setCurrentAudio(music)
+      return;
+    }
+
+    // pause audio if already playing
+    if(soundObj.isLoaded && soundObj.isPlaying && currentAudio.id === music.id){
+     const status = await playbackObj.setStatusAsync({shouldPlay:false});
+      setSoundObj(status);
+      return;
+    }
+
+    // resume audio
+    if(soundObj.isLoaded && !soundObj.isPlaying && currentAudio.id === music.id){
+      const status = await playbackObj.playAsync()
+      setSoundObj(status);
+    }
+
+    // play another audio
+    if(soundObj.isLoaded && currentAudio.id !== music.id){
+      await playbackObj.stopAsync()
+      await playbackObj.unloadAsync()
+      const status = await playbackObj.loadAsync({uri:music.url},{shouldPlay:true})
+      setCurrentAudio(music),
+      setSoundObj(status)
+
+    }
+  }
+
+
+  // flatlist item
+  const songItem = ({ item }) => {
+    return <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}
+    onPress={()=>handleAudioPress(item)}
+    >
+      <Image source={{ uri: item.artwork }} style={{ width: 70, height: 70, marginLeft: 20, marginRight: 10, borderRadius: 5 }} />
+      <View>
+        <Text style={{ color: item.id === currentAudio.id ? '#9c16ad' : '#fdfbff' }}>{item.title}</Text>
+        {item.artist && <Text style={{ color: '#b1a7bb' }}>{item.artist}</Text>}
+      </View>
+    </TouchableOpacity>
+  }
+  return (
+    <View style={styles.songs}>
+      <FlatList
+        data={songs}
+        renderItem={songItem}
+      />
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  songs: {
+    flex: 1,
+    backgroundColor: '#170524',
+  }
+})
