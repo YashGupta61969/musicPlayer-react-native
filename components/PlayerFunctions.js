@@ -6,7 +6,7 @@ import { useData } from '../context/Context';
 import data from '../data/data';
 
 
-export default function SliderView({ width }) {
+export default function PlayerFunctions({ width }) {
   const {playbackDuration, playbackPosition, soundObj, playbackObj, setSoundObj, currentAudio, setCurrentAudio} = useData();
 
   const [loading, setLoading] = useState(false)
@@ -41,11 +41,24 @@ const handlePlayPause = async()=>{
   }
 }
 
+
+// play next song 
 const playNext = async ()=>{
-  const nextAudio = data.find(el=>+el.id === +currentAudio.id + 1)
-  if(soundObj.isLoaded && currentAudio.id !== nextAudio.id){
+  let nextAudio = data.find(el=>+el.id === +currentAudio.id + 1)
+  if(nextAudio){
+    if(soundObj.isLoaded && currentAudio.id !== nextAudio.id){
+      await playbackObj.stopAsync()
+      await playbackObj.unloadAsync()
+      const status = await playbackObj.loadAsync({uri:nextAudio.url},{shouldPlay:true})
+      setSoundObj(status);
+      setCurrentAudio(nextAudio)
+      setLoading(true)
+    }
+  }else{
+    // play 1st song when all songs are played
     await playbackObj.stopAsync()
     await playbackObj.unloadAsync()
+    nextAudio = data[0]
     const status = await playbackObj.loadAsync({uri:nextAudio.url},{shouldPlay:true})
     setSoundObj(status);
     setCurrentAudio(nextAudio)
@@ -53,9 +66,11 @@ const playNext = async ()=>{
   }
 }
 
+
+// play previous song
 const playPrev = async() =>{
   const prevAudio = data.find(el=>+el.id === +currentAudio.id - 1)
-  if(soundObj.isLoaded && currentAudio.id !== prevAudio.id){
+  if(soundObj.isLoaded && currentAudio.id !== prevAudio.id && currentAudio.id !==1){
     await playbackObj.stopAsync()
     await playbackObj.unloadAsync()
     const status = await playbackObj.loadAsync({uri:prevAudio.url},{shouldPlay:true})
@@ -77,12 +92,13 @@ const playPrev = async() =>{
           maximumTrackTintColor="#b1a7bb"
           thumbTintColor="#9c16ad"
           value={calcSeekBar()}
-          onSlidingComplete={() => {
-
+          onSlidingComplete={(val) => {
+            playbackObj.playFromPositionAsync(val * playbackDuration)
           }} />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18 }}>
-          <Text style={{ color: '#fdfbff' }}>{msToHMS(playbackPosition)}</Text>
-          <Text style={{ color: '#fdfbff' }}>{msToHMS(playbackDuration)}</Text>
+          
+        <View style={styles.timeWrapper}>
+          <Text style={styles.time}>{msToHMS(playbackPosition)}</Text>
+          <Text style={styles.time}>{msToHMS(playbackDuration)}</Text>
         </View>
       </View>
 
@@ -109,5 +125,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     marginTop: 20
+  },
+  timeWrapper:{
+    flexDirection: 'row',
+     justifyContent: 'space-between',
+      paddingHorizontal: 18
+  },
+  time:{
+    color: '#fdfbff'
   }
 })

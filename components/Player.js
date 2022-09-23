@@ -1,36 +1,49 @@
-import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, useWindowDimensions } from 'react-native'
 import { useData } from '../context/Context';
-import SliderView from './Slider'
+import PlayerFunctions from './PlayerFunctions'
 
 function Player() {
   const { width } = useWindowDimensions();
-  const {currentAudio} = useData()
+  const { currentAudio } = useData()
 
   return (
     <View style={styles.container}>
-      <View style={{width:width-45, marginTop:10}}>
-       <Image source={{uri:currentAudio.artwork}} style={{height:350,width:'100%', borderRadius:10}}/>
+      <View style={{ width: width - 45, marginTop: 10 }}>
+        <Image source={{ uri: currentAudio.artwork }} style={styles.image} />
       </View>
       <View style={styles.details}>
-        <Text style={{fontSize:22, color:'#fdfbff', marginBottom:5}}>{currentAudio.title}</Text>
-       <Text style={{fontSize:15, color:'#b1a7bb'}}>{currentAudio.artist}</Text>
+        <Text style={styles.title}>{currentAudio.title}</Text>
+        <Text style={styles.artist}>{currentAudio.artist}</Text>
       </View>
-      <SliderView width={width}/>
+      <PlayerFunctions width={width} />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:'#170524'
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#170524'
   },
-  details:{
-    marginVertical:10,
-    alignItems:'center'
+  details: {
+    marginVertical: 10,
+    alignItems: 'center'
+  },
+  image: {
+    height: 350,
+     width: '100%',
+     borderRadius: 10
+  },
+  title:{
+    fontSize: 22,
+     color: '#fdfbff',
+     marginBottom: 5
+  },
+  artist:{
+    fontSize: 15,
+   color: '#b1a7bb' 
   }
 })
 
