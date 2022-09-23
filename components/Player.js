@@ -1,18 +1,20 @@
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, useWindowDimensions } from 'react-native'
-import songs from '../data/data'
+import { useData } from '../context/Context';
 import SliderView from './Slider'
 
 function Player() {
   const { width } = useWindowDimensions();
+  const {currentAudio} = useData()
 
   return (
     <View style={styles.container}>
       <View style={{width:width-45, marginTop:10}}>
-        <Image source={{uri:songs[1].artwork}} style={{height:350,width:'100%', borderRadius:10}}/>
+       <Image source={{uri:currentAudio.artwork}} style={{height:350,width:'100%', borderRadius:10}}/>
       </View>
       <View style={styles.details}>
-        <Text style={{fontSize:22, color:'#fdfbff', marginBottom:5}}>{songs[0].title}</Text>
-        <Text style={{fontSize:15, color:'#b1a7bb'}}>{songs[0].artist}</Text>
+        <Text style={{fontSize:22, color:'#fdfbff', marginBottom:5}}>{currentAudio.title}</Text>
+       <Text style={{fontSize:15, color:'#b1a7bb'}}>{currentAudio.artist}</Text>
       </View>
       <SliderView width={width}/>
     </View>

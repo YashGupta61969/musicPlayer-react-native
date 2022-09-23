@@ -2,13 +2,12 @@ import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react
 import React, {useState} from 'react'
 import songs from '../data/data'
 import { Audio } from 'expo-av'
+import { useData } from '../context/Context'
 
 
-export default function Songs() {
+export default function Songs({navigation}) {
+  const {playbackObj, setPlaybackObj, soundObj, setSoundObj, currentAudio, setCurrentAudio, setPlaybackPosition, setPlaybackDuration} = useData()
 
-  const [playbackObj, setPlaybackObj] = useState()
-  const [soundObj, setSoundObj] = useState()
-  const [currentAudio, setCurrentAudio] = useState({})  
 
   const handleAudioPress = async (music)=>{
     // playing audio for the first time
@@ -18,6 +17,16 @@ export default function Songs() {
       setPlaybackObj(playbackObj)
       setSoundObj(status);
       setCurrentAudio(music)
+
+          playbackObj.setOnPlaybackStatusUpdate((playbackStatus)=>{
+            if(playbackStatus.isLoaded && playbackStatus.isPlaying){
+              setPlaybackPosition(playbackStatus.positionMillis)
+              setPlaybackDuration(playbackStatus.durationMillis)
+            }if(playbackStatus.didJustFinish){
+
+            }
+          })
+
       return;
     }
 

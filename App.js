@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Player from './components/Player';
 import Icons from 'react-native-vector-icons/Ionicons'
 import Feather from 'react-native-vector-icons/Feather'
-import songs from './data/data'
+import Context from './context/Context';
 
 
 const colors = {
@@ -21,6 +21,7 @@ const Tab = createBottomTabNavigator()
 
  function App() {
   return (
+    <Context>
     <SafeAreaProvider>
       <StatusBar
       barStyle={'light-content'}
@@ -61,6 +62,7 @@ const Tab = createBottomTabNavigator()
       </Tab.Navigator>
     </NavigationContainer>
     </SafeAreaProvider>
+    </Context>
   );
 }
 
